@@ -92,7 +92,7 @@ class Status:
             if any(item[key] in ('quota-y', 'quota-g') for key in ('quotaR', 'quotaK')):
                 self.data_collated.append(item)
         if self.data_collated:
-            print(str(datetime.now())[0:19] + '\n-----------\n监测到有名额，正在检测详细信息...')
+            print(str(datetime.now())[0:19] + '\n-----------\n部分地区有空位，正在检测是否符合...')
             print(self.data_collated)
         else:
             print(str(datetime.now())[0:19] + '\n-----------\n仍无有效名额，持续监测中' + '\n-----------\n')
@@ -116,10 +116,14 @@ def main():
     while not status.available_item:
         status.send_request()
         status.collation_details(user)
-        time.sleep(5)
+        if status.available_item:
+            print(str(datetime.now())[0:19] + '\n暂无符合的位置信息，继续监控\n')
+            time.sleep(5)
         # print(str(datetime.now())[0:19] + str(status.available_item))
     print(str(datetime.now())[0:19] + str(status.available_item))
-    user.send_to_wecom(str(datetime.now())[0:19] + status.available_item) if user.wecom_on else print(str(datetime.now())[0:19] + " 用户关闭了企业微信通知...")
+    user.send_to_wecom(str(datetime.now())[0:19] + status.available_item +
+                       '\n一键直达：https://www.gov.hk/sc/apps/immdicbooking2.htm') if user.wecom_on \
+        else print(str(datetime.now())[0:19] + " 用户关闭了企业微信通知...")
 
 
 if __name__ == '__main__':
